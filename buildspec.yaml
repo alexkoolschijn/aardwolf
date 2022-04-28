@@ -15,9 +15,8 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - mvn package
-      - ls
-      - mv target/aardwolf.war files/aardwolf.war
+      - mvn verify -P production
+      - mv target/aardwolf*.war files/aardwolf*.war
       - echo Building the Docker image...
       - docker build -t aardwolf:${CODEBUILD_BUILD_NUMBER} .
       - docker tag $IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER} $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER}
@@ -28,5 +27,5 @@ phases:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER}
 artifacts:
   files:
-    - files/aardwolf.war
+    - files/aardwolf*.war
 #    - .ebextensions/**/*
