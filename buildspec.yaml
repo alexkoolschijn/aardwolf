@@ -1,0 +1,32 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  pre_build:
+    commands:
+      - echo In the pre_build phase...
+      - echo Logging in to Amazon ECR...
+      - echo ${CODEBUILD_BUILD_NUMBER}
+      - echo Region $AWS_DEFAULT_REGION
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=${REPO_ECR}
+  build:
+    commands:
+      - echo Build started on `date`
+      - mvn package
+      - ls
+      - mv target/aardwolf.war files/aardwolf.war
+      - echo Building the Docker image...
+      - docker build -t aardwolf:${CODEBUILD_BUILD_NUMBER} .
+      - docker tag $IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER} $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER}
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:${CODEBUILD_BUILD_NUMBER}
+artifacts:
+  files:
+    - files/aardwolf.war
+#    - .ebextensions/**/*
