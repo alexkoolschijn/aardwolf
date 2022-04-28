@@ -1,0 +1,11 @@
+:root {
+    --red: #e34647;
+}
+
+.warningText {
+    color: var(--red);
+}
+
+.successText {
+    color: green;
+}

@@ -1,0 +1,6 @@
+/*@import "../../../../shared-styles.css";*/
+
+.header {
+    font-size: 20px; /* todo: use value from shared-styles */
+    font-weight: bold;
+}
